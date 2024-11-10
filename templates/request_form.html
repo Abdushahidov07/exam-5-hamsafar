@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+  <div class="form-container">
+    <h1>Создать заявку</h1>
+
+    <form method="POST">
+      {% csrf_token %}
+      
+      <div class="form-field">
+        <label for="{{ form.start_location.id_for_label }}">Место ожидания</label>
+        {{ form.start_location }}
+      </div>
+
+      <div class="form-field">
+        <label for="{{ form.description.id_for_label }}">Описание заявки</label>
+        {{ form.description }}
+      </div>
+
+      <div class="form-field">
+        <label for="{{ form.is_active.id_for_label }}">Статус заявки</label>
+        {{ form.is_active }}
+      </div>
+
+      <button type="submit" class="btn">Подать заявку</button>
+    </form>
+  </div>
+{% else %}
+  <h1>You are not logged in</h1>
+  <a href="{% url "login" %}">log in</a>
+{% endif %}
+{% endblock %}
+
+{% block styles %}
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+
+    .form-container {
+      background-color: #fff;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      margin: auto;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 24px;
+      color: #333;
+    }
+
+    .form-field {
+      margin-bottom: 20px;
+    }
+
+    .form-field label {
+      display: block;
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .form-field input,
+    .form-field select,
+    .form-field textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-field input:focus,
+    .form-field select:focus,
+    .form-field textarea:focus {
+      border-color: #007BFF;
+      outline: none;
+    }
+
+    button[type="submit"] {
+      background-color: #007BFF;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #0056b3;
+    }
+  </style>
+{% endblock %}

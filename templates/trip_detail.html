@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+  <div class="trip-detail-container">
+    <h1>Детали поездки: {{ trip.start_location }} → {{ trip.end_location }}</h1>
+
+    <div class="trip-info">
+      <p><strong>Водитель:</strong> {{ trip.driver.username }}</p>
+      <p><strong>Дата отправления:</strong> {{ trip.departure_time|date:"d F Y, H:i" }}</p>
+      <p><strong>Мест:</strong> {{ trip.available_seats }}</p>
+      <p><strong>Цена:</strong> {{ trip.price }} ₽</p>
+      <p><strong>Описание:</strong> {{ trip.description }}</p>
+    </div>
+
+    <div class="actions">
+    {% if user.id == trip.driver.id %}
+      <a href="{% url 'trip_update' trip.pk %}" class="btn btn-secondary">Редактировать поездку</a>
+      <a href="{% url 'trip_delete' trip.pk %}" class="btn btn-danger">Удалить поездку</a>
+    {% endif %}
+    </div>
+
+    <div class="application-section">
+      <h2>Заявки на поездку</h2>
+      {% if applications %}
+      <div class="application-list">
+        {% for application in applications %}
+          <div class="application-item">
+            <div class="application-info">
+              <p><strong>Поездка:</strong> {{ application.trip.start_location }} → {{ application.trip.end_location }}</p>
+              <p><strong>Статус заявки:</strong> {{ application.status|capfirst }}</p>
+              <p><strong>Дата подачи:</strong> {{ application.created_at|date:"d F Y, H:i" }}</p>
+              <p><strong>Описание:</strong> {{ application.description }}</p>
+            </div>
+            <div class="application-actions">
+            {% if user.id == application.client.id %}
+              <a href="{% url 'application_update' application.pk %}" class="btn btn-secondary">Редактировать</a>
+              <a href="{% url 'application_delete' application.pk %}" class="btn btn-danger">Удалить</a>
+            {% endif %}
+
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>У вас нет заявок.</p>
+    {% endif %}
+      {% if user.is_authenticated %}
+        <form method="POST" action="{% url 'application_create' trip.id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-primary">Подать заявку на поездку</button>
+        </form>
+      {% else %}
+        <p>Для подачи заявки нужно <a href="{% url 'login' %}">войти в систему</a>.</p>
+      {% endif %}
+    </div>
+
+  </div>
+  {% else %}
+  <h1>You are not logged in</h1>
+  <a href="{% url "login" %}">log in</a>
+{% endif %}
+{% endblock %}
+
+{% block styles %}
+  <style>
+    .trip-detail-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    .trip-info p {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    .actions {
+      margin-top: 20px;
+      margin-bottom: 30px;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      font-size: 1rem;
+      border-radius: 5px;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+      color: #fff;
+      margin-right: 10px;
+    }
+
+    .btn-secondary:hover {
+      background-color: #5a6268;
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+      color: #fff;
+    }
+
+    .btn-danger:hover {
+      background-color: #c82333;
+    }
+
+    .application-section {
+      margin-top: 40px;
+    }
+
+    .application-section h2 {
+      font-size: 1.8rem;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .application-section p {
+      font-size: 1.1rem;
+    }
+  </style>
+{% endblock %}

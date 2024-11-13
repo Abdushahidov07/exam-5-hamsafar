@@ -37,6 +37,7 @@
         <ul class="request-list">
           {% for request in requests %}
             <li>
+              <p><strong>Водитель:</strong> {{ trip.driver.username }}</p>
               <h3>Место ожидания: {{ request.start_location }}</h3>
               <p>Описание: {{ request.description }}</p>
               <p>Статус: {{ request.is_active|yesno:"Активна,Неактивна" }}</p>

@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView,TemplateView
 
 from .models import Trip, Request, Application
@@ -8,7 +9,7 @@ def login(request):
     return redirect('/accounts/login/')
 
 # CRUD для модели Trip
-class TripListView(ListView):
+class TripListView(LoginRequiredMixin,ListView):
     model = Trip
     template_name = 'home.html'
     context_object_name = 'trips'
@@ -17,7 +18,7 @@ class TripListView(ListView):
         context['requests'] = Request.objects.all()
         return context
     
-class TripDetailView(DetailView):
+class TripDetailView(LoginRequiredMixin,DetailView):
     model = Trip
     template_name = 'trip_detail.html'
     context_object_name = 'trip'
@@ -28,7 +29,7 @@ class TripDetailView(DetailView):
         context['applications'] = Application.objects.filter(trip=trip)  # Все заявки на текущую поездку
         return context
     
-class TripCreateView(CreateView):
+class TripCreateView(LoginRequiredMixin,CreateView):
     model = Trip
     template_name = 'trip_form.html'
     fields = ['start_location', 'end_location', 'departure_time', 'available_seats', 'price', 'description']
@@ -38,7 +39,7 @@ class TripCreateView(CreateView):
         form.instance.driver = self.request.user
         return super().form_valid(form)
 
-class TripUpdateView(UpdateView):
+class TripUpdateView(LoginRequiredMixin, UpdateView):
     model = Trip
     template_name = 'trip_form.html'
     fields = ['start_location', 'end_location', 'departure_time', 'available_seats', 'price', 'description']
@@ -47,7 +48,7 @@ class TripUpdateView(UpdateView):
     def get_queryset(self):
         return Trip.objects.filter(driver=self.request.user)
 
-class TripDeleteView(DeleteView):
+class TripDeleteView(LoginRequiredMixin, DeleteView):
     model = Trip
     template_name = 'trip_confirm_delete.html'
     success_url = reverse_lazy('home')
@@ -56,18 +57,18 @@ class TripDeleteView(DeleteView):
         return Trip.objects.filter(driver=self.request.user)
 
 # CRUD для модели Request
-class RequestListView(ListView):
+class RequestListView(LoginRequiredMixin, ListView):
     model = Request
     template_name = 'request_list.html'
     context_object_name = 'requests'
 
 
-class RequestDetailView(DetailView):
+class RequestDetailView(LoginRequiredMixin, DetailView):
     model = Request
     template_name = 'request_detail.html'
     context_object_name = 'request'
 
-class RequestCreateView(CreateView):
+class RequestCreateView(LoginRequiredMixin, CreateView):
     model = Request
     template_name = 'request_form.html'
     fields = ['start_location', 'description']
@@ -77,7 +78,7 @@ class RequestCreateView(CreateView):
         form.instance.client = self.request.user
         return super().form_valid(form)
 
-class RequestUpdateView(UpdateView):
+class RequestUpdateView(LoginRequiredMixin, UpdateView):
     model = Request
     template_name = 'request_form.html'
     fields = ['start_location', 'description']
@@ -86,7 +87,7 @@ class RequestUpdateView(UpdateView):
     def get_queryset(self):
         return Request.objects.filter(client=self.request.user)
 
-class RequestDeleteView(DeleteView):
+class RequestDeleteView(LoginRequiredMixin, DeleteView):
     model = Request
     template_name = 'request_confirm_delete.html'
     success_url = reverse_lazy('home')
@@ -95,7 +96,7 @@ class RequestDeleteView(DeleteView):
         return Request.objects.filter(client=self.request.user)
 
 # CRUD для модели Application
-class ApplicationListView(ListView):
+class ApplicationListView(LoginRequiredMixin, ListView):
     model = Application
     template_name = 'application_list.html'
     context_object_name = 'applications'
@@ -103,7 +104,7 @@ class ApplicationListView(ListView):
     def get_queryset(self):
         return Application.objects.filter(client=self.request.user)
 
-class ApplicationCreateView(CreateView):
+class ApplicationCreateView(LoginRequiredMixin, CreateView):
     model = Application
     template_name = 'application_form.html'
     fields = ['status',"start_location","description"] 
@@ -116,7 +117,7 @@ class ApplicationCreateView(CreateView):
         
         return super().form_valid(form)
 
-class ApplicationUpdateView(UpdateView):
+class ApplicationUpdateView(LoginRequiredMixin, UpdateView):
     model = Application
     template_name = 'application_form.html'
     fields = ['status',"start_location","description"] 
@@ -125,7 +126,7 @@ class ApplicationUpdateView(UpdateView):
     def get_queryset(self):
         return Application.objects.filter(client=self.request.user)
 
-class ApplicationDeleteView(DeleteView):
+class ApplicationDeleteView(LoginRequiredMixin, DeleteView):
     model = Application
     template_name = 'application_confirm_delete.html'
     success_url = reverse_lazy('application_list')

@@ -14,8 +14,8 @@
       <p><strong>Описание:</strong> {{ trip.description }}</p>
     </div>
 
-    <div class="actions">
-    {% if user.id == trip.driver.id %}
+    <div class="actions">    
+      {% if user.id == trip.driver.id %}
       <a href="{% url 'trip_update' trip.pk %}" class="btn btn-secondary">Редактировать поездку</a>
       <a href="{% url 'trip_delete' trip.pk %}" class="btn btn-danger">Удалить поездку</a>
     {% endif %}
